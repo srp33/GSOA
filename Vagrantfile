@@ -4,7 +4,7 @@ then
   sudo apt-get install -y git
 
   cd /home/vagrant
-  git clone https://srp33@bitbucket.org/srp33/gsoa.git
+  git clone https://srp33@github.com/srp33/gsoa.git
   sudo chmod 777 gsoa -R
   mv gsoa/* .
   mv gsoa/.git .
