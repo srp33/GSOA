@@ -1,0 +1,15 @@
+Gene Set	p-value
+Signal10	0.0
+Signal1	0.0
+Mixed50	0.0
+Mixed10	0.0
+Signal2	0.0
+Mixed100	0.02
+Mixed2	0.02
+Random10	0.42
+Random100	0.75
+Random50	0.83
+Random1	0.89
+Random2	0.99
+Random990	1.0
+Mixed990	1.0

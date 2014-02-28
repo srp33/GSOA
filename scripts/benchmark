@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -o errexit
+
+numRandomIterations=10
+
+for numFolds in 3 5
+do
+  for algorithm in svmrbf svmlinear
+  do
+    time ./scripts/run "Simulated/genesets.gmt" Simulated/Classes3.txt Simulated/Data.txt $numRandomIterations Benchmark/Simulated_Classes3_${numFolds}folds_${algorithm} Config/${numFolds}folds_${algorithm}.txt
+  done
+done

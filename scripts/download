@@ -1,0 +1,9 @@
+#!/bin/bash
+
+rsync -avz spiccolo@tikvah:/data2/Vagrant/gsoa/Results/* Results/
+
+dataDir=/Users/stevep/Temp/GSOA_Data
+
+#mkdir -p $dataDir
+#rm -rf $dataDir/*
+#scp spiccolo@tikvah:/data2/Vagrant/gsoa/Data/* $dataDir/

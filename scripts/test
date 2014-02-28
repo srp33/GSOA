@@ -1,0 +1,37 @@
+#!/bin/bash
+
+set -o errexit
+
+if [ ! -f Simulated/Data.txt ]
+then
+  mkdir -p Simulated
+  rm -f Simulated/*
+  Rscript --vanilla code/GenerateSimulatedData.R
+  python code/BuildSimulatedGmt.py
+fi
+
+function runTest {
+  sudo ./scripts/run "Simulated/genesets.gmt" Simulated/Classes${1}.txt Simulated/Data.txt 100 Simulated_Classes${1}
+
+#  diffResult1=$(sudo python code/AreFilesIdentical.py Results/Simulated_Classes${1}_AUC.txt Expected_Simulated_Results/Simulated_Classes${1}_AUC.txt)
+#  diffResult2=$(sudo python code/AreFilesIdentical.py Results/Simulated_Classes${1}_PValue.txt Expected_Simulated_Results/Simulated_Classes${1}_PValue.txt)
+#
+#  if [ "$diffResult1" != "True" ]
+#  then
+#    echo Test $1 [FAILED]
+#    echo Results/Simulated_Classes${1}_AUC.txt and Expected_Simulated_Results/Simulated_Classes${1}_AUC.txt are not identical.
+#    exit 1
+#  fi
+#
+#  if [ "$diffResult2" != "True" ]
+#  then
+#    echo Test $1 [FAILED]
+#    echo Results/Simulated_Classes${1}_PValue.txt and Expected_Simulated_Results/Simulated_Classes${1}_PValue.txt are not identical.
+#    exit 1
+#  fi
+#
+#  echo Test $1 [PASSED]
+}
+
+runTest 2
+runTest 3

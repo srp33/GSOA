@@ -1,0 +1,26 @@
+#!/bin/bash
+
+function initDir {
+  dirName=$1
+
+  mkdir -pv /vagrant/$dirName
+
+  if [ ! -d /home/vagrant/$dirName ]
+  then
+    ln -sv /vagrant/$dirName /home/vagrant/$dirName
+  fi
+}
+
+sudo apt-get -y update
+sudo apt-get install -y build-essential python-dev python-numpy python-setuptools python-scipy libopenblas-dev r-base-core parallel vim
+
+wget --no-dns-cache -O scikit-learn-0.14a1.tar.gz http://sourceforge.net/projects/scikit-learn/files/scikit-learn-0.14a1.tar.gz/download
+tar -zxvf scikit-learn-0.14a1.tar.gz
+rm -f scikit-learn-0.14a1.tar.gz
+cd scikit-learn-0.14a1
+sudo python setup.py install
+
+sudo Rscript --vanilla code/InstallBioconductor.R
+
+initDir Data
+initDir Results

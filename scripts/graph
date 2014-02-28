@@ -1,0 +1,59 @@
+#!/bin/bash
+
+dataDir=/Users/stevep/Temp/GSOA_Data
+
+rm -rf Figures/*
+
+#Rscript --vanilla code/PlotHeatmap.R Results/Simulated_Classes3_PValue.txt FALSE TRUE 1.01 "." Simulated Figures/Simulated_Classes3_PValue.pdf
+
+function plotHeatmap {
+  x=$1
+  main="$2"
+
+  Rscript --vanilla code/PlotHeatmap.R Results/${x}_PValue.txt TRUE FALSE 0.05 REACTOME "$main" Figures/${x}_PValue.pdf
+
+  python code/RoundPValues.py Results/${x}_PValue.txt 0.05 Results/${x}_PValue_Rounded.txt
+  Rscript --vanilla code/PlotHeatmap.R Results/${x}_PValue_Rounded.txt TRUE TRUE 0.05 REACTOME "$main (rnd)" Figures/${x}_PValue_Rounded.pdf
+}
+
+#Rscript --vanilla code/PlotGeneSetAgreement.R Results/Benchmark/Simulated_Classes3_5folds_svmrbf_AUC.txt Results/Benchmark/Simulated_Classes3_3folds_svmrbf_AUC.txt Figures/Simulated_Classes3_5vs3folds_svmrbf_AUC.pdf "SVM (rbf) - 5 folds" "SVM (rbf) - 3 folds"
+#Rscript --vanilla code/PlotGeneSetAgreement.R Results/Benchmark/Simulated_Classes3_5folds_svmrbf_AUC.txt Results/Benchmark/Simulated_Classes3_5folds_svmlinear_AUC.txt Figures/Simulated_Classes3_5folds_svmrbfvslinear_AUC.pdf "SVM (rbf) - 5 folds" "SVM (linear) - 5 folds"
+#Rscript --vanilla code/PlotGeneSetAgreement.R Results/Benchmark/Simulated_Classes3_5folds_svmrbf_AUC.txt Results/Benchmark/Simulated_Classes3_3folds_svmlinear_AUC.txt Figures/Simulated_Classes3_5foldssvmrbf_3foldssvmlinear_AUC.pdf "SVM (rbf) - 5 folds" "SVM (linear) - 3 folds"
+
+#plotHeatmap PANCAN12_BreastCancerSubtypes_RnaSeq_tumor "RNA"
+#plotHeatmap PANCAN12_BreastCancerSubtypes_CNV_tumor CNV
+#plotHeatmap PANCAN12_BreastCancerSubtypes_mutations_cleaned Muts
+#plotHeatmap PANCAN12_CancerTypes_RnaSeq_tumor "RNA"
+
+#Rscript --vanilla code/OverlapRoundedPValues.R "Results/PANCAN12_BreastCancerSubtypes_*_PValue_Rounded.txt" /tmp/tmp1
+#Rscript --vanilla code/PlotHeatmap.R /tmp/tmp1 TRUE TRUE 0.05 REACTOME "Any significant p-value" Figures/PANCAN12_BreastCancerSubtypes_PValue_Rounded.pdf
+
+#Rscript --vanilla code/CalculateRankPValues.R "Results/PANCAN12_BreastCancerSubtypes_*_PValue.txt" /tmp/tmp1
+#Rscript --vanilla code/PlotHeatmap.R /tmp/tmp1 FALSE FALSE 0.01 REACTOME "rank" Figures/PANCAN12_BreastCancerSubtypes_CombinedRanks.pdf
+#python code/RoundPValues.py /tmp/tmp1 0.01 /tmp/tmp2
+#Rscript --vanilla code/PlotHeatmap.R /tmp/tmp2 FALSE TRUE 0.01 REACTOME "rank (rnd)" Figures/PANCAN12_BreastCancerSubtypes_CombinedRanks_Rounded.pdf
+
+function plotGeneSetAgreement {
+  dataType1=$1
+  dataType2=$2
+  description1="$3"
+  description2="$4"
+
+  Rscript --vanilla code/PlotGeneSetAgreement.R Results/PANCAN12_BreastCancerSubtypes_${dataType1}_5folds_svmrbf_AUC.txt Results/PANCAN12_BreastCancerSubtypes_${dataType2}_5folds_svmrbf_AUC.txt Figures/PANCAN12_BreastCancerSubtypes_${dataType1}_vs_${dataType2}_Pathway_5folds_svmrbf_AUC.pdf "$description1" "$description2"
+}
+
+#plotGeneSetAgreement AgilentExpression_tumor RnaSeq_tumor "Agilent Microarray" "RNA-Sequencing"
+#plotGeneSetAgreement CNV_tumor RnaSeq_tumor "DNA Copy Number" "RNA-Sequencing"
+#plotGeneSetAgreement DNAMethylation_tumor RnaSeq_tumor "DNA Methylation" "RNA-Sequencing"
+#plotGeneSetAgreement CNV_tumor mutations_cleaned_filtered "DNA Copy Number" "DNA Mutations"
+#plotGeneSetAgreement RnaSeq_tumor mutations_cleaned_filtered "RNA-Sequencing" "DNA Mutations"
+#plotGeneSetAgreement DNAMethylation_tumor CNV_tumor "DNA Methylation" "DNA Copy Number"
+#plotGeneSetAgreement DNAMethylation_tumor mutations_cleaned_filtered "DNA Methylation" "DNA Mutations"
+
+
+#python code/CalculateGeneLevelAgreement.py /Users/stevep/Downloads/PANCAN12.IlluminaHiSeq_RNASeqV2.geneExp.tumor_whitelist /Users/stevep/Downloads/TCGA_Breast_AgilentExpression.txt 10000
+
+
+#open Figures/*
+
+rm -f /tmp/tmp?

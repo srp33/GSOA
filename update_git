@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -o errexit
+
+cd /home/vagrant
+git pull origin master

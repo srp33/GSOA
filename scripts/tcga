@@ -1,0 +1,38 @@
+#!/bin/bash
+
+set -o errexit
+
+#./update
+
+## Breast subtypes
+#for config in 10folds_svmrbf 5folds_svmrbf 3folds_svmrbf 2folds_svmrbf
+for config in 10folds_svmrbf
+do
+  configFile=Config/$config.txt
+
+  sudo ./scripts/run "Data/GeneSets/c2.cp.v4.0.symbols.gmt" Data/TCGA_BreastCancerSubtypes.txt Data/TCGA_Breast_AgilentExpression.txt 100 PANCAN12_BreastCancerSubtypes_AgilentExpression_tumor_${config} $configFile
+  sudo ./scripts/run "Data/GeneSets/c2.cp.v4.0.symbols.gmt" Data/TCGA_BreastCancerSubtypes.txt Data/PANCAN12.IlluminaHiSeq_RNASeqV2.geneExp.tumor_whitelist 100 PANCAN12_BreastCancerSubtypes_RnaSeq_tumor_${config} $configFile
+  sudo ./scripts/run "Data/GeneSets/c2.cp.v4.0.symbols.gmt" Data/TCGA_BreastCancerSubtypes.txt Data/PANCAN12.Genome_Wide_SNP_6.cna_nocnv.tumor_whitelist 100 PANCAN12_BreastCancerSubtypes_CNV_tumor_${config} $configFile
+  sudo ./scripts/run "Data/GeneSets/c2.cp.v4.0.symbols.gmt" Data/TCGA_BreastCancerSubtypes.txt Data/PANCAN12.DNAMethylation.tumor_whitelist 100 PANCAN12_BreastCancerSubtypes_DNAMethylation_tumor_${config} $configFile
+
+  #for x in mutations_cleaned mutations_cleaned_filtered mutations_cleaned_all mutations_cleaned_filtered_all
+  for x in mutations_cleaned mutations_cleaned_filtered
+  do
+    sudo ./scripts/run "Data/GeneSets/c2.cp.v4.0.symbols.gmt" Data/TCGA_BreastCancerSubtypes.txt Data/PANCAN12_${x} 100 PANCAN12_BreastCancerSubtypes_${x}_${config} $configFile
+  done
+done
+
+## PANCAN12 - Tumor gene expression and CNV and Methylation
+#sudo ./scripts/run "Data/GeneSets/c2.cp.v4.0.symbols.gmt" Data/PANCAN12_CancerTypes.txt Data/PANCAN12.IlluminaHiSeq_RNASeqV2.geneExp.tumor_whitelist 100 PANCAN12_CancerTypes_RnaSeq_tumor
+##sudo ./scripts/run "Data/GeneSets/c2.cp.v4.0.symbols.gmt" Data/PANCAN12_CancerTypes.txt Data/PANCAN12.Genome_Wide_SNP_6.cna_nocnv.tumor_whitelist 100 PANCAN12_CancerTypes_CNV_tumor
+#sudo ./scripts/run "Data/GeneSets/c2.cp.v4.0.symbols.gmt" Data/PANCAN12_CancerTypes.txt Data/PANCAN12.DNAMethylation.tumor_whitelist 100 PANCAN12_CancerTypes_DNAMethylation_tumor
+
+## PANCAN12 - Tumor somatic mutations
+##for x in mutations_cleaned
+##do
+##  sudo ./scripts/run "Data/GeneSets/c2.cp.v4.0.symbols.gmt" Data/PANCAN12_CancerTypes.txt Data/PANCAN12_${x} 100 PANCAN12_CancerTypes_${x}
+##done
+
+## PANCAN12 - Normal gene expression and CNV and Methylation
+##sudo ./scripts/run "Data/GeneSets/c2.cp.v4.0.symbols.gmt" Data/PANCAN12_CancerTypes.txt Data/PANCAN12.IlluminaHiSeq_RNASeqV2.geneExp.normal_whitelist 100 PANCAN12_CancerTypes_RnaSeq_normal
+##sudo ./scripts/run "Data/GeneSets/c2.cp.v4.0.symbols.gmt" Data/PANCAN12_CancerTypes.txt Data/PANCAN12.Genome_Wide_SNP_6.cna_nocnv.normal_whitelist 100 PANCAN12_CancerTypes_CNV_normal

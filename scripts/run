@@ -1,0 +1,47 @@
+#!/bin/bash
+
+set -o errexit
+
+geneSetFilePattern="$1"
+classesFilePath="$2"
+dataFilePath="$3"
+numRandomIterations="$4"
+outDescription="$5"
+configFile="$6"
+
+if [ "$configFile" == "" ]
+then
+  configFile=Config/default.txt
+fi
+
+outDataDir=GeneSetData
+outResultsDir=GeneSetResults
+outRandomDataDir=GeneSetRandomData
+outRandomResultsDir=GeneSetRandomResults
+outPValueResultsDir=GeneSetPValueResults
+commandScript=predict_these
+outAUCFilePath=Results/${outDescription}_AUC.txt
+outPValueFilePath=Results/${outDescription}_PValue.txt
+
+echo Executing $outDescription
+
+sudo rm -rf $outDataDir $outResultsDir $outRandomDataDir $outRandomResultsDir $outPValueResultsDir
+sudo mkdir -p $outDataDir $outResultsDir $outRandomDataDir $outRandomResultsDir $outPValueResultsDir $(dirname $outAUCFilePath) $(dirname $outPValueFilePath)
+
+sudo python code/PrepareToRun.py "$geneSetFilePattern" "$classesFilePath" "$dataFilePath" $numRandomIterations $outDataDir $outResultsDir $outRandomDataDir $outRandomResultsDir "./scripts/predict" $commandScript $configFile
+
+sudo chmod 777 $commandScript
+#sudo ./$commandScript
+sudo parallel -a $commandScript --max-procs 12 --ungroup
+
+sudo python code/CalculateEmpiricalPValues.py $outDataDir $outResultsDir $outRandomResultsDir $outPValueResultsDir
+
+sudo python code/CombineOutputFiles.py "$outResultsDir/*" AUC /tmp/tmp1
+sudo python code/CombineOutputFiles.py "$outPValueResultsDir/*" "p-value" /tmp/tmp2
+
+sudo python code/SortFile.py /tmp/tmp1 -1 reverse 1 numeric $outAUCFilePath
+sudo python code/SortFile.py /tmp/tmp2 -1 forward 1 numeric $outPValueFilePath
+
+echo See results summary in $outAUCFilePath and $outPValueFilePath
+
+sudo rm -rf $outDataDir $outResultsDir $outRandomDataDir $outRandomResultsDir $outPValueResultsDir /tmp/tmp?

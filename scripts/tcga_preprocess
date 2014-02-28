@@ -1,0 +1,157 @@
+#!/bin/bash
+
+################################################################
+# Before running this script, it is necessary to manually
+# download data from TCGA (breast cancer => Agilent gene
+# expression => Level 3) and PANCAN12 whitelist files from
+# Synapse. These require manual authentication steps. The files
+# should be placed in Data/Raw/ (must be created first if it
+# does not exist). Some of the paths below may also need to be
+# changed.
+################################################################
+
+currentDir=`pwd`
+dataDir=$currentDir/Data
+codeDir=$currentDir/code
+tempDir=/tmp/TCGA_PanCan
+brcaRootUrl=https://tcga-data.nci.nih.gov/docs/publications/brca_2012/
+subtypesFileName=BRCA.547.PAM50.SigClust.Subtypes.txt
+samplesFile=$dataDir/Samples.txt
+mrnaFileName=BRCA.Gene_Expression.Level_3.tar
+
+mkdir -p $dataDir/Raw
+
+function createTempFiles {
+  deleteTempFiles
+  mkdir -p $tempDir
+  touch $tempDir/tmpFile1 $tempDir/tmpFile2 $tempDir/tmpFile3
+}
+
+function deleteTempFiles {
+  rm -rfv $tempDir
+}
+
+createTempFiles
+trap 'deleteTempFiles' TERM EXIT INT
+
+################################################################
+# Download and parse breast cancer subtype data
+################################################################
+
+#wget -O $dataDir/$subtypesFileName $brcaRootUrl/$subtypesFileName
+
+#python code/InsertColumnViaExpression.py $dataDir/$subtypesFileName "x[0][:16]" $tempDir/tmpFile1
+#tail -n +2 $tempDir/tmpFile1 > $tempDir/tmpFile2
+#python code/SelectColumns.py $tempDir/tmpFile2 -1,-2 $dataDir/TCGA_BreastCancerSubtypes.txt
+
+################################################################
+# Need to download PANCAN12 data manually (requires login) from https://www.synapse.org/#!Synapse:syn1695324 and https://www.synapse.org/#!Synapse:syn1729383
+# These files should be placed in the "Data/Raw" directory.
+# Then the following scripts parse the raw data files.
+################################################################
+
+#python code/BuildTcgaCancerTypesFile.py "Data/Raw/tcga_*_whitelist" Data/PANCAN12_CancerTypes.txt
+
+#for x in PANCAN12.IlluminaHiSeq_RNASeqV2.geneExp.tumor_whitelist PANCAN12.IlluminaHiSeq_RNASeqV2.geneExp.normal_whitelist PANCAN12.Genome_Wide_SNP_6.cna.tumor_whitelist PANCAN12.Genome_Wide_SNP_6.cna.normal_whitelist PANCAN12.Genome_Wide_SNP_6.cna_nocnv.tumor_whitelist PANCAN12.Genome_Wide_SNP_6.cna_nocnv.normal_whitelist
+#do
+#  echo $x
+#  python code/ParseTcgaMatrixFile.py Data/Raw/$x Data/$x
+#done
+
+#python code/ParseTcgaMafFile.py Data/Raw/pancan12_cleaned.maf True Data/PANCAN12_mutations_cleaned
+#python code/ParseTcgaMafFile.py Data/Raw/pancan12_cleaned_filtered.maf True Data/PANCAN12_mutations_cleaned_filtered
+#python code/ParseTcgaMafFile.py Data/Raw/pancan12_cleaned.maf False Data/PANCAN12_mutations_cleaned_all
+#python code/ParseTcgaMafFile.py Data/Raw/pancan12_cleaned_filtered.maf False Data/PANCAN12_mutations_cleaned_filtered_all
+
+#python code/ParseTcgaMethylationFile.py Data/Raw/PANCAN12.HumanMethylation27.DNAMethylation.tumor_whitelist Data/Raw/jhu-usc.edu_TCGA_HumanMethylation27.v2.adf.txt Data/PANCAN12.DNAMethylation.tumor_whitelist
+
+################################################################
+# Parse breast cancer Agilent expression data (it is not in
+# PANCAN12)
+################################################################
+
+python code/ParseTcgaAgilentExpressionFiles.py "Data/Raw/TCGA_Breast_AgilentExpression/*.txt" Data/TCGA_Breast_AgilentExpression.txt
+
+#################################################################
+## Download and parse Agilent mRNA data
+#################################################################
+##cd $tempDir
+##
+##rm -rf ${mrnaFileName/\.tar/}*
+##wget -O $mrnaFileName $brcaRootUrl/$mrnaFileName
+##
+##tar xvf $mrnaFileName
+##cd ${mrnaFileName/\.tar/}
+##rm *.md5
+##for f in *.tar.gz
+##do
+##  tar zxvf $f
+##done
+##rm *.gz
+##rm -rf *mage*
+##mv */*data.txt .
+##
+##rm -frv $dataDir/MrnaExpression
+##mkdir -p $dataDir/MrnaExpression
+##for f in *data.txt
+##do
+##  python $codeDir/FormatAgilentExpression.py $f $dataDir/MrnaExpression
+##done
+##
+##cd $tempDir
+##rm -rf ${mrnaFileName/\.tar/}*
+##cd $tempDir
+##
+##python code/BuildMatrix.py "$dataDir/MrnaExpression/*" $tempDir/tmpFile1
+##python code/FilterFileByRowNames.py $tempDir/tmpFile1 $samplesFile 1 $tempDir/tmpFile2
+##python code/TransposeData.py $tempDir/tmpFile2 $dataDir/MrnaExpression.txt
+##python code/PrintMatrixDimensions.py $dataDir/MrnaExpression.txt
+##
+##################################################################
+### Download and parse RNA-Seq data
+##################################################################
+##
+##cd $tempDir
+##
+##metaFileName=unc.edu_BRCA.IlluminaHiSeq_RNASeqV2.1.5.0.sdrf.txt
+##wget -O $metaFileName https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/brca/cgcc/unc.edu/illuminahiseq_rnaseqv2/rnaseqv2/unc.edu_BRCA.IlluminaHiSeq_RNASeqV2.mage-tab.1.5.0/unc.edu_BRCA.IlluminaHiSeq_RNASeqV2.1.5.0.sdrf.txt
+##
+##wget -O MANIFEST.txt https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/brca/cgcc/unc.edu/illuminahiseq_rnaseqv2/rnaseqv2/unc.edu_BRCA.IlluminaHiSeq_RNASeqV2.Level_3.1.4.0/MANIFEST.txt
+##python $codeDir/ReplaceText.py MANIFEST.txt "  " "\t" MANIFEST.txt
+##python $codeDir/FilterFile.py MANIFEST.txt "'rsem.genes.normalized_results' in x[1]" 0 $tempDir/tmpFile1
+##python $codeDir/SelectColumns.py $tempDir/tmpFile1 1 $tempDir/tmpFile2
+##
+##rm -rf TCGA_RNA-Seq
+##mkdir -p TCGA_RNA-Seq
+##for f in `cat $tempDir/tmpFile2`
+##do
+##  echo $f
+##  wget -O TCGA_RNA-Seq/$f https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/brca/cgcc/unc.edu/illuminahiseq_rnaseqv2/rnaseqv2/unc.edu_BRCA.IlluminaHiSeq_RNASeqV2.Level_3.1.4.0/$f
+##
+##  tail -n +2 TCGA_RNA-Seq/$f > $tempDir/tmpFile1
+##  python $code/InsertColumnViaExpression.py $tempDir/tmpFile1 "x[0].split('|')[0]" $tempDir/tmpFile3
+##  python $code/SelectColumns.py $tempDir/tmpFile3 2,1 $tempDir/tmpFile1
+##  python $code/FilterFile.py $tempDir/tmpFile1 "x[0] != '?'" 0 TCGA_RNA-Seq/$f
+##
+##  tcgaID=`python $code/ParseTCGAIDFromSDRF.py $f $metaFileName`
+##  echo -e "\t$tcgaID" > $tempDir/tmpFile1
+##  cp TCGA_RNA-Seq/$f $tempDir/tmpFile2
+##  cat $tempDir/tmpFile1 $tempDir/tmpFile2 > TCGA_RNA-Seq/$f
+##done
+##
+##python $codeDir/code/BuildMatrix.py "TCGA_RNA-Seq/*" $tempDir/tmpFile1
+##python $codeDir/code/FilterFileByRowNames.py $tempDir/tmpFile1 $samplesFile 1 $tempDir/tmpFile2
+##python $codeDir/code/TransposeData.py $tempDir/tmpFile2 $dataDir/RnaSeq.txt
+##python $codeDir/code/PrintMatrixDimensions.py $dataDir/RnaSeq.txt
+##
+##rm -f $tempDir/tmpFile*
+##rm -rf TCGA_RNA-Seq
+##
+##cd $currentDir
+##
+#################################################################
+## Delete unnecessary files
+#################################################################
+##rm -fv $dataDir/$subtypesFileName
+##rm -fv $samplesFile
+##rm -frv $data/MrnaExpression

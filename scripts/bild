@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -o errexit
+
+#for x in Ras BCat Myc E2F3 Src
+#do
+#  python code/MergeMatrixOnRowNames.py Data/BCat_E2F3_Myc_Ras_Src_Control_SCANr_Entrez.txt Data/${x}_Expr_SCANr_Entrez.txt /tmp/tmp1
+#  sudo ./scripts/run "Data/GeneSets/*entrez.gmt" Data/${x}_Classes.txt /tmp/tmp1 100 Bild_${x}
+#done
+
+python code/MergeMatrixOnRowNames.py Data/EGFR_Control_SCANr_Entrez.txt Data/EGFR_Expr_SCANr_Entrez.txt /tmp/tmp1
+sudo ./scripts/run "Data/GeneSets/*entrez.gmt" Data/EGFR_Classes.txt /tmp/tmp1 100 Bild_EGFR
+
+#rm -f /tmp/tmp*

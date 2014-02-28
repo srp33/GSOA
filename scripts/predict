@@ -1,0 +1,3 @@
+#!/bin/bash
+
+sudo python code/Predict.py "$1" "$2" "$3" "$4"
