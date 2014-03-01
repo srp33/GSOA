@@ -24,7 +24,7 @@ cd ..
 wget http://lib.stat.cmu.edu/R/CRAN/src/base/R-3/R-3.0.2.tar.gz
 tar zxvf R-3.0.2.tar.gz
 cd R-3.0.2
-sudo ./configure
+sudo ./configure --with-x=no
 sudo make
 sudo make install
 
