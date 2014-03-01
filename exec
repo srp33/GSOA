@@ -1,3 +1,5 @@
 #!/bin/bash
 
-vagrant ssh --command "./scripts/$1"
+./commit_git
+vagrant ssh --command "~/update_git"
+#vagrant ssh --command "~/scripts/$1"
