@@ -11,24 +11,26 @@ function initDir {
   fi
 }
 
-sudo apt-get -y update
-sudo apt-get install -y build-essential python-dev python-numpy python-setuptools python-scipy libopenblas-dev parallel vim
+#sudo apt-get -y update
+#sudo apt-get install -y build-essential python-dev python-numpy python-setuptools python-scipy libopenblas-dev parallel vim
 
-wget --no-dns-cache -O scikit-learn-0.14a1.tar.gz http://sourceforge.net/projects/scikit-learn/files/scikit-learn-0.14a1.tar.gz/download
-tar -zxvf scikit-learn-0.14a1.tar.gz
-rm -f scikit-learn-0.14a1.tar.gz
-cd scikit-learn-0.14a1
-sudo python setup.py install
-cd ..
+#wget --no-dns-cache -O scikit-learn-0.14a1.tar.gz http://sourceforge.net/projects/scikit-learn/files/scikit-learn-0.14a1.tar.gz/download
+#tar -zxvf scikit-learn-0.14a1.tar.gz
+#rm -f scikit-learn-0.14a1.tar.gz
+#cd scikit-learn-0.14a1
+#sudo python setup.py install
+#cd ..
 
-wget http://lib.stat.cmu.edu/R/CRAN/src/base/R-3/R-3.0.2.tar.gz
-tar zxvf R-3.0.2.tar.gz
+sudo apt-get install -y gfortran
+
+#wget http://lib.stat.cmu.edu/R/CRAN/src/base/R-3/R-3.0.2.tar.gz
+#tar zxvf R-3.0.2.tar.gz
 cd R-3.0.2
 sudo ./configure --with-x=no
 sudo make
 sudo make install
 
-sudo Rscript --vanilla /home/vagrant/code/InstallBioconductor.R
+#sudo Rscript --vanilla /home/vagrant/code/InstallBioconductor.R
 
-initDir Data
-initDir Results
+#initDir Data
+#initDir Results
