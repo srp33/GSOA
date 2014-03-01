@@ -4,6 +4,7 @@ set -o errexit
 
 if [ ! -f Simulated/Data.txt ]
 then
+echo "got here"
   mkdir -p Simulated
   rm -f Simulated/*
   Rscript --vanilla code/GenerateSimulatedData.R

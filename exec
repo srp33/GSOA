@@ -9,5 +9,4 @@ fi
 ./commit_git
 vagrant ssh --command "~/update_git"
 
-vagrant ssh --command "pwd"
-#vagrant ssh --command "~/scripts/$1"
+vagrant ssh --command "~/scripts/$1"
