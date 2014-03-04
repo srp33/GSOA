@@ -2,8 +2,9 @@
 
 dataDir=/Users/stevep/Temp/GSOA_Data
 
-rm -rf Figures/*
+#rm -rf Figures/*
 
+Rscript --vanilla code/PlotHeatmap.R Results/Simulated_Classes2_PValue.txt FALSE TRUE 1.01 "." Simulated Figures/Simulated_Classes3_PValue.pdf
 #Rscript --vanilla code/PlotHeatmap.R Results/Simulated_Classes3_PValue.txt FALSE TRUE 1.01 "." Simulated Figures/Simulated_Classes3_PValue.pdf
 
 function plotHeatmap {

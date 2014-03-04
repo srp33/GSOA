@@ -4,11 +4,11 @@ then
   sudo apt-get install -y git
 
   cd /home/vagrant
-  git clone https://srp33@github.com/srp33/gsoa.git
-  sudo chmod 777 gsoa -R
-  mv gsoa/* .
-  mv gsoa/.git .
-  rm -rf gsoa
+  git clone https://srp33@github.com/srp33/GSOA.git
+  sudo chmod 777 GSOA -R
+  mv GSOA/* .
+  mv GSOA/.git .
+  rm -rf GSOA
 
   ./initialize_vm
 fi
