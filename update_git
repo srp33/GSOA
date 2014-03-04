@@ -2,5 +2,5 @@
 
 set -o errexit
 
-cd /home/vagrant
+#cd /home/vagrant
 git pull origin master

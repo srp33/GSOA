@@ -11,3 +11,5 @@ vagrant ssh --command "~/update_git"
 
 vagrant ssh --command "rm -f ~/nohup_${1}.out"
 vagrant ssh --command "nohup ~/scripts/$1 > ~/nohup_${1}.out"
+
+vagrant ssh --command "~/commit_git"
