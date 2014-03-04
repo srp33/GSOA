@@ -7,7 +7,7 @@ then
 fi
 
 ./commit_git
-#vagrant ssh --command "nohup ~/update_git > ~/nohup_${1}.out &"
-vagrant ssh --command "nohup echo ~/update_git > ~/nohup_${1}.out &"
+vagrant ssh --command "rm -f ~/nohup_${1}.out"
+vagrant ssh --command "nohup ~/update_git > ~/nohup_${1}.out"
 
 #vagrant ssh --command "~/scripts/$1"
